@@ -1,0 +1,15 @@
+Twoim zadaniem będzie określenie, w którą stronę skierowana jest strzałka będąca głównym bodźcem, 
+ignorując tym samym obecność dystraktorów.  Wyboru dokonasz klikając jeden z następujących, 
+odpowiadających kierunkowi strzałki klawiszy na klawiaturze. 
+
+			„A” dla strzałki w lewo < (LEWA RĘKA)
+			„K” dla strzałki w prawo > (PRAWA RĘKA)
+
+PRZYKŁAD: Jeśli na ekranie zobaczysz jeden z bodźców zgodnych, np. dla >>>>> naciśnij klawisz „K”. 
+Dla bodźców niezgodnych, np. dla >><>> naciśnij klawisz „A”, ignorując przy tym obecność dystraktorów.
+Oprócz strzałek, czasami na ekranie w miejsce flankerów pojawiać się będą bodźce neutralne w postaci kółek. 
+Twoje zadanie w takim przypadku jest takie samo – wskazanie kierunku strzałki będącej bodźcem głównym,
+np. dla OO>OO naciśnij klawisz „K”, ignorując przy tym obecność kółek. 
+
+
+Naciśnij SPACJĘ, aby kontynować

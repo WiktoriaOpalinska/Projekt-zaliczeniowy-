@@ -1,0 +1,7 @@
+W zadaniu, które za chwile wykonasz, na ekranie pojawiać się będą 3 rodzaje bodźców 
+w postaci strzałek i kółek. Bodźce mogą być: 
+zgodne – strzałki wskazujące w tym samym kierunku, 
+niezgodne – główny bodziec o przeciwnym zwrocie niż dystraktory, 
+neutralne – kółka zamiast dystraktorów. 
+
+Naciśnij SPACJĘ, aby kontynować
