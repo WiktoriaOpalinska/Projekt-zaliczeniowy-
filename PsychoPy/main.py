@@ -81,12 +81,34 @@ def show_info(win, file_name, insert=''):
             'Experiment finished by user on info screen! F7 pressed.')
     win.flip()
 
+def create_stimuli_list(n):
+    stim1 = []
+    stim2 = []
+    for i in range(int(n*0.2)):
+        stim1.append('>>>>>')
+    for i in range(int(n*0.2)):
+        stim1.append('<<<<<')
+    for i in range(int(n*0.2)):
+        stim1.append('>><>>')
+    for i in range(int(n*0.2)):
+        stim1.append('<<><<')
+    for i in range(int(n*0.1)):
+        stim1.append('OO>OO')
+    for i in range(int(n*0.1)):
+        stim1.append('OO<OO')
 
-def training(win, conf, clock, fix_cross, ntt=1):
+    for i in range(n, 0, -1):
+        stim2.append(stim1.pop(random.randrange(0, i)))
+
+    return stim2
+
+
+def training(win, conf, clock, fix_cross, list_of_stimuli, ntt=1):
     block_no = 0
+    trial_no = 0
     if ntt == 1:
         for trial in range(conf['NO_TRAINING_TRIALS']):
-            key_pressed, corr, trial_no, ctype, stim_type, rt = run_trial(win, conf, clock, fix_cross)
+            key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, list_of_stimuli)
             RESULTS.append([PART_ID, trial_no, 'Sesja Treningowa', block_no, ctype, stim_type, key_pressed, rt, corr])
 
             feedb = 'Poprawnie' if corr else 'Niepoprawnie'
@@ -97,7 +119,7 @@ def training(win, conf, clock, fix_cross, ntt=1):
             win.flip()
     elif ntt == 2:
         for trial in range(conf['NO_TRAINING2_TRIALS']):
-            key_pressed, corr, trial_no, ctype, stim_type, rt = run_trial(win, conf, clock, fix_cross)
+            key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, list_of_stimuli)
             RESULTS.append([PART_ID, trial_no, 'Sesja Treningowa 2', block_no, ctype, stim_type, key_pressed, rt, corr])
 
             feedb = 'Poprawnie' if corr else 'Niepoprawnie'
@@ -108,7 +130,7 @@ def training(win, conf, clock, fix_cross, ntt=1):
             win.flip()
 
 
-def second_training(win, conf, clock, fix_cross):
+def second_training(win, conf, clock, fix_cross, list_of_stimuli):
     question = visual.TextStim(win, color='black',
                                text='Potrzebujesz jeszcze jednego treningu?\n Wybierz t - tak, n - nie',
                                height=conf['TEXT_HEIGHT'], wrapWidth=SCREEN_RES['width'])
@@ -117,34 +139,9 @@ def second_training(win, conf, clock, fix_cross):
     key = event.waitKeys(keyList=['t', 'n'])
     for _ in range(1):
         if key == ['t']:
-            training(win, conf, clock, fix_cross, ntt=2)
+            training(win, conf, clock, fix_cross, list_of_stimuli, ntt=2)
         elif key == ['n']:
             break
-
-
-def create_stimuli(n):
-    stim1 = []
-    stim2 = []
-
-    for i in range(int(n * 0.2)):
-        stim1.append('>>>>>')
-    for i in range(int(n * 0.2)):
-        stim1.append('<<<<<')
-    for i in range(int(n * 0.2)):
-        stim1.append('>><>>')
-    for i in range(int(n * 0.2)):
-        stim1.append('<<><<')
-    for i in range(int(n * 0.1)):
-        stim1.append('OO>OO')
-    for i in range(int(n * 0.1)):
-        stim1.append('OO<OO')
-
-    for i in range(n, 0, -1):
-        stim2.append(stim1.pop(random.randrange(0, i)))
-
-    our_stim = stim2.pop()
-
-    return our_stim
 
 
 def type_of_stim(our_stim):
@@ -219,7 +216,7 @@ def main():
     conf = yaml.load(open('config.yaml', encoding='utf-8'), Loader=yaml.Loader)
 
     # === Scene init ===
-    win = visual.Window(list(SCREEN_RES.values()), fullscr=False, monitor='mainMonitor',
+    win = visual.Window(list(SCREEN_RES.values()), fullscr=True, monitor="testMonitor",
                         units='pix', color=conf['BACKGROUND_COLOR'])
     event.Mouse(visible=False, win=win)
     FRAME_RATE = get_frame_rate(win)
@@ -237,8 +234,14 @@ def main():
     logging.info('FRAME RATE: {}'.format(FRAME_RATE))
     logging.info('SCREEN RES: {}'.format(SCREEN_RES.values()))
 
-    # === Fixation cross ===
+    # === Fixation cross and stimuli ===
     fix_cross = visual.TextStim(win, text='+', height=conf['STIM_HEIGHT'], color=conf['FIX_CROSS_COLOR'])
+    stim_list_1 = create_stimuli_list(conf['NO_TRIALS'])
+    stim_list_2 = create_stimuli_list(conf['NO_TRIALS'])
+    stim_list_3 = create_stimuli_list(conf['NO_TRIALS'])
+    stim_list_4 = create_stimuli_list(conf['NO_TRIALS'])
+    stim_list_t1 = create_stimuli_list(int(conf['NO_TRAINING_TRIALS'])+5)
+    stim_list_t2 = create_stimuli_list(int(conf['NO_TRAINING2_TRIALS']))
 
     # === Training ===
     show_info(win, join('.', 'messages', 'hello.txt'))
@@ -247,19 +250,33 @@ def main():
     show_info(win, join('.', 'messages', 'hello4.txt'))
 
     show_info(win, join('.', 'messages', 'before_training.txt'))
-    training(win, conf, clock, fix_cross, 1)
+    training(win, conf, clock, fix_cross, stim_list_t1, 1)
 
     # === Second training ===
-    second_training(win, conf, clock, fix_cross)
+    second_training(win, conf, clock, fix_cross, stim_list_t2)
 
     # === Experiment ===
     show_info(win, join('.', 'messages', 'before_experiment.txt'))
 
-    for block_no in range(conf['NO_BLOCKS']):
-        for _ in range(conf['NO_TRIALS']):
-            key_pressed, corr, trial_no, ctype, stim_type, rt = run_trial(win, conf, clock, fix_cross)
-            RESULTS.append([PART_ID, trial_no, 'Sesja eksperymentalna', block_no, ctype, stim_type,
+    for block_no in range(int(conf['NO_BLOCKS'])):
+        for i in range(conf['NO_TRIALS']):
+            if block_no == 0:
+                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_1)
+                trial_no = 1
+            elif block_no == 1:
+                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_2)
+                trial_no = 2
+            elif block_no == 2:
+                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_3)
+                trial_no = 3
+            elif block_no == 3:
+                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_4)
+                trial_no = 4
+            else:
+                break
+            RESULTS.append([PART_ID, trial_no, 'Sesja eksperymentalna', int(block_no)+1, ctype, stim_type,
                             key_pressed, rt, corr])
+
         show_info(win, join('.', 'messages', 'break.txt'))
 
     # === Cleaning time ===
@@ -270,12 +287,11 @@ def main():
     core.quit()
 
 
-def run_trial(win, conf, clock, fix_cross):
+def run_trial(win, conf, clock, fix_cross, list_of_stimuli):
     # === Prepare trial-related stimulus ===
-    our_stim = create_stimuli(conf['NO_TRIALS'])
+    our_stim = list_of_stimuli.pop()
     ctype, stim_type = type_of_stim(our_stim)
     stim = visual.TextStim(win, text=our_stim, height=conf['STIM_HEIGHT'], color=conf['STIM_COLOR'])
-    trial_no = 1
 
     # === Start pre-trial stuff===
     for _ in range(conf['FIX_CROSS_TIME']):
@@ -287,22 +303,24 @@ def run_trial(win, conf, clock, fix_cross):
     win.callOnFlip(clock.reset)
 
     for _ in range(conf['STIM_TIME']):
-        reaction = event.getKeys(keyList=list(conf['REACTION_KEYS']), timeStamped=True)
+        reaction = event.getKeys(keyList=list(conf['REACTION_KEYS']), timeStamped=clock)
         if reaction:
             key_pressed, corr, rt = data_to_be_sent(reaction, stim_type)
             break
         stim.draw()
         win.flip()
 
+        if reaction:
+            timer = clock.getTime()
+            rt = timer - reaction[0][1]
+
         if not reaction:
             key_pressed = 'brak'
             corr = False
             rt = -1.0
 
-    trial_no += 1
-
     # === Trial ended, prepare data for send  ===
-    return key_pressed, corr, trial_no, ctype, stim_type, rt
+    return key_pressed, corr, ctype, stim_type, rt, our_stim
 
 
 if __name__ == '__main__':
