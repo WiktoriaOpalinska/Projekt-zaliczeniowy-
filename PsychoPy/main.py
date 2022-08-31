@@ -82,25 +82,22 @@ def show_info(win, file_name, insert=''):
     win.flip()
 
 def create_stimuli_list(n):
-    stim1 = []
-    stim2 = []
-    for i in range(int(n*0.2)):
-        stim1.append('>>>>>')
-    for i in range(int(n*0.2)):
-        stim1.append('<<<<<')
-    for i in range(int(n*0.2)):
-        stim1.append('>><>>')
-    for i in range(int(n*0.2)):
-        stim1.append('<<><<')
-    for i in range(int(n*0.1)):
-        stim1.append('OO>OO')
-    for i in range(int(n*0.1)):
-        stim1.append('OO<OO')
+    """
+    In this function we create a list of stimuli.
+    x and y - to make a proper number of stimuli of each type
+    """
+    
+    if n%10 != 0:
+        abort_with_error('NO_TRIALS must be divisible by 10')
+    
+    x = int(n*0.2)
+    y = int(n*0.1)
+    
+    stim1 = (['<<<<<', '<<><<', '>>>>>', '>><>>'] * x) + (['OO>OO', 'OO<OO'] * y)
 
-    for i in range(n, 0, -1):
-        stim2.append(stim1.pop(random.randrange(0, i)))
+    random.shuffle(stim1)
 
-    return stim2
+    return stim1
 
 
 def training(win, conf, clock, fix_cross, list_of_stimuli, ntt=1):
