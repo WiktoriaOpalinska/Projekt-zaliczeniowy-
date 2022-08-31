@@ -245,10 +245,7 @@ def main():
 
     # === Fixation cross and stimuli ===
     fix_cross = visual.TextStim(win, text='+', height=conf['STIM_HEIGHT'], color=conf['FIX_CROSS_COLOR'])
-    stim_list_1 = create_stimuli_list(conf['NO_TRIALS'])
-    stim_list_2 = create_stimuli_list(conf['NO_TRIALS'])
-    stim_list_3 = create_stimuli_list(conf['NO_TRIALS'])
-    stim_list_4 = create_stimuli_list(conf['NO_TRIALS'])
+    stim_list  = [create_stimuli_list(conf['NO_TRIALS']) for _ in range(conf['NO_BLOCKS'])] 
     stim_list_t1 = create_stimuli_list(int(conf['NO_TRAINING_TRIALS']))
     stim_list_t2 = create_stimuli_list(int(conf['NO_TRAINING2_TRIALS']))
 
@@ -267,23 +264,12 @@ def main():
     # === Experiment ===
     show_info(win, join('.', 'messages', 'before_experiment.txt'))
 
-    for block_no in range(int(conf['NO_BLOCKS'])):
-        for i in range(conf['NO_TRIALS']):
-            if block_no == 0:
-                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_1)
-                trial_no = 1
-            elif block_no == 1:
-                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_2)
-                trial_no = 2
-            elif block_no == 2:
-                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_3)
-                trial_no = 3
-            elif block_no == 3:
-                key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list_4)
-                trial_no = 4
-            else:
-                break
-            RESULTS.append([PART_ID, trial_no, 'Sesja eksperymentalna', int(block_no)+1, ctype, stim_type,
+    for block in range(int(conf['NO_BLOCKS'])):
+        for trial in range(conf['NO_TRIALS']):
+            key_pressed, corr, ctype, stim_type, rt, our_stim = run_trial(win, conf, clock, fix_cross, stim_list[block])
+            trial_no = trial + 1
+            block_no = block + 1
+            RESULTS.append([PART_ID, trial_no, 'Sesja eksperymentalna', block_no, ctype, stim_type,
                             key_pressed, rt, corr])
 
         show_info(win, join('.', 'messages', 'break.txt'))
