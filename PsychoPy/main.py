@@ -101,6 +101,13 @@ def create_stimuli_list(n):
 
 
 def training(win, conf, clock, fix_cross, list_of_stimuli, ntt=1):
+    """
+    This function lets us make a training session, which differs a bit from experimental session.
+    feedb - Feedback, which shows to a participant if his/her reactions are correct.
+    nnt - an abbrevation for NO_TRAINING_TRIALS
+        if ntt = 1 it means that it is first training
+        if ntt = 2 it means that it is second training which is shorter than the first one.  
+    """
     block_no = 0
     trial_no = 0
     if ntt == 1:
@@ -128,6 +135,11 @@ def training(win, conf, clock, fix_cross, list_of_stimuli, ntt=1):
 
 
 def second_training(win, conf, clock, fix_cross, list_of_stimuli):
+    """
+    In this part we ask a participant if he/she need second training session.
+    If yes, the function calls training function. If no, we skip to an experimental session
+    """
+    
     question = visual.TextStim(win, color='black',
                                text='Potrzebujesz jeszcze jednego treningu?\n Wybierz t - tak, n - nie',
                                height=conf['TEXT_HEIGHT'], wrapWidth=SCREEN_RES['width'])
@@ -237,7 +249,7 @@ def main():
     stim_list_2 = create_stimuli_list(conf['NO_TRIALS'])
     stim_list_3 = create_stimuli_list(conf['NO_TRIALS'])
     stim_list_4 = create_stimuli_list(conf['NO_TRIALS'])
-    stim_list_t1 = create_stimuli_list(int(conf['NO_TRAINING_TRIALS'])+5)
+    stim_list_t1 = create_stimuli_list(int(conf['NO_TRAINING_TRIALS']))
     stim_list_t2 = create_stimuli_list(int(conf['NO_TRAINING2_TRIALS']))
 
     # === Training ===
